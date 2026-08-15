@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#050916">
+  <title>NEXUS Rail Mode</title>
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    .rail-page {
+      width: min(1050px, calc(100% - 24px));
+      margin: auto;
+      padding: 28px 0 70px;
+    }
+
+    .rail-top {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:15px;
+      margin-bottom:20px;
+    }
+
+    .rail-back {
+      color:#a678ff;
+      text-decoration:none;
+      font-size:12px;
+    }
+
+    .rail-hero {
+      position:relative;
+      overflow:hidden;
+      padding:30px;
+      border:1px solid rgba(50,210,255,.18);
+      border-radius:25px;
+      background:
+        radial-gradient(circle at 85% 20%,rgba(36,181,255,.17),transparent 32%),
+        radial-gradient(circle at 10% 100%,rgba(142,75,255,.16),transparent 35%),
+        rgba(8,14,30,.9);
+    }
+
+    .rail-kicker {
+      color:#5dceff;
+      font-size:9px;
+      font-weight:800;
+      letter-spacing:2px;
+    }
+
+    .rail-hero h1 {
+      margin:8px 0 8px;
+      font-size:clamp(32px,6vw,52px);
+      letter-spacing:-1.8px;
+    }
+
+    .rail-hero p {
+      max-width:650px;
+      margin:0;
+      color:#9ca9c2;
+      font-size:12px;
+      line-height:1.7;
+    }
+
+    .rail-tabs {
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:9px;
+      margin:15px 0;
+    }
+
+    .rail-tab {
+      padding:13px 8px;
+      border:1px solid var(--line);
+      border-radius:13px;
+      background:rgba(255,255,255,.035);
+      color:#8995ad;
+      font-size:10px;
+      font-weight:700;
+    }
+
+    .rail-tab.active {
+      color:#fff;
+      border-color:rgba(67,195,255,.35);
+      background:linear-gradient(135deg,rgba(37,157,255,.16),rgba(144,82,255,.12));
+    }
+
+    .rail-section {
+      display:none;
+    }
+
+    .rail-section.active {
+      display:block;
+    }
+
+    .rail-card {
+      padding:20px;
+      margin-bottom:14px;
+      border:1px solid var(--line);
+      border-radius:19px;
+      background:rgba(8,14,30,.84);
+    }
+
+    .rail-card h2 {
+      margin:0 0 6px;
+      font-size:16px;
+    }
+
+    .rail-card > p {
+      margin:0 0 17px;
+      color:#7f8ba4;
+      font-size:10px;
+    }
+
+    .rail-form {
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:9px;
+    }
+
+    .rail-form.two {
+      grid-template-columns:1fr 1fr auto;
+    }
+
+    .rail-input {
+      width:100%;
+      min-height:45px;
+      padding:0 13px;
+      border:1px solid var(--line);
+      border-radius:11px;
+      outline:0;
+      background:#091226;
+      color:#fff;
+      font-size:11px;
+    }
+
+    .rail-input:focus {
+      border-color:rgba(69,194,255,.5);
+    }
+
+    .rail-btn {
+      min-height:45px;
+      padding:0 16px;
+      border:0;
+      border-radius:11px;
+      background:linear-gradient(135deg,#277fd8,#7950dc);
+      color:#fff;
+      font-size:10px;
+      font-weight:800;
+    }
+
+    .rail-btn.secondary {
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      color:#b8c3d7;
+    }
+
+    .result {
+      display:none;
+      margin-top:14px;
+      padding:16px;
+      border:1px solid rgba(52,216,255,.18);
+      border-radius:14px;
+      background:rgba(34,164,255,.045);
+    }
+
+    .result.show {
+      display:block;
+    }
+
+    .result-title {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .result-title strong {
+      font-size:13px;
+    }
+
+    .live {
+      color:#31e99a;
+      font-size:8px;
+      font-weight:800;
+      letter-spacing:1px;
+    }
+
+    .train-route {
+      display:grid;
+      grid-template-columns:1fr 55px 1fr;
+      align-items:center;
+      gap:10px;
+      margin-top:17px;
+    }
+
+    .station strong {
+      display:block;
+      font-size:14px;
+    }
+
+    .station small {
+      display:block;
+      margin-top:4px;
+      color:#74819a;
+      font-size:8px;
+    }
+
+    .station:last-child {
+      text-align:right;
+    }
+
+    .route-line {
+      position:relative;
+      height:2px;
+      background:linear-gradient(90deg,#3daeff,#a15eff);
+    }
+
+    .route-line::after {
+      content:"";
+      position:absolute;
+      width:8px;
+      height:8px;
+      right:0;
+      top:-3px;
+      border-radius:50%;
+      background:#62cfff;
+      box-shadow:0 0 12px #62cfff;
+    }
+
+    .result-meta {
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:8px;
+      margin-top:15px;
+    }
+
+    .meta {
+      padding:10px;
+      border-radius:10px;
+      background:rgba(255,255,255,.035);
+    }
+
+    .meta small {
+      display:block;
+      color:#68758e;
+      font-size:8px;
+    }
+
+    .meta b {
+      display:block;
+      margin-top:4px;
+      font-size:10px;
+    }
+
+    .rail-grid {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+    }
+
+    .recent-list {
+      display:grid;
+      gap:8px;
+    }
+
+    .recent-item {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:11px;
+      border:1px solid var(--line);
+      border-radius:11px;
+      background:rgba(255,255,255,.025);
+    }
+
+    .recent-item b {
+      display:block;
+      font-size:10px;
+    }
+
+    .recent-item small {
+      display:block;
+      margin-top:4px;
+      color:#6f7b94;
+      font-size:8px;
+    }
+
+    .recent-item button {
+      border:0;
+      background:transparent;
+      color:#9d71ff;
+      font-size:9px;
+    }
+
+    .notice {
+      padding:13px;
+      border:1px solid rgba(255,181,47,.16);
+      border-radius:12px;
+      color:#a9b4c8;
+      background:rgba(255,181,47,.04);
+      font-size:9px;
+      line-height:1.6;
+    }
+
+    .pnr-status {
+      margin-top:14px;
+      display:none;
+    }
+
+    .pnr-status.show {
+      display:block;
+    }
+
+    .status-good {
+      color:#32e99b;
+    }
+
+    @media(max-width:700px) {
+      .rail-tabs {
+        grid-template-columns:1fr 1fr;
+      }
+
+      .rail-grid {
+        grid-template-columns:1fr;
+      }
+
+      .rail-form.two,
+      .rail-form {
+        grid-template-columns:1fr;
+      }
+
+      .rail-btn {
+        width:100%;
+      }
+    }
+
+    @media(max-width:430px) {
+      .rail-page {
+        width:min(100% - 18px,1050px);
+        padding-top:18px;
+      }
+
+      .rail-hero {
+        padding:23px 18px;
+      }
+
+      .rail-card {
+        padding:16px;
+      }
+
+      .train-route {
+        grid-template-columns:1fr 35px 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="rail-page">
+
+    <div class="rail-top">
+      <a href="index.html" class="rail-back">← Back to NEXUS</a>
+      <span class="rail-kicker">NEXUS RAIL MODE</span>
+    </div>
+
+    <section class="rail-hero">
+      <div class="rail-kicker">WHERE IS MY TRAIN?</div>
+      <h1>Rail Mode</h1>
+      <p>
+        Search trains, check PNR information, find stations and
+        prepare the interface for live railway data.
+      </p>
+    </section>
+
+
+    <div class="rail-tabs">
+
+      <button class="rail-tab active" data-tab="train">
+        Where Is My Train
+      </button>
+
+      <button class="rail-tab" data-tab="pnr">
+        PNR Status
+      </button>
+
+      <button class="rail-tab" data-tab="station">
+        Station Search
+      </button>
+
+      <button class="rail-tab" data-tab="live">
+        Live Status
+      </button>
+
+    </div>
+
+
+    <!-- TRAIN -->
+
+    <section class="rail-section active" id="train">
+
+      <div class="rail-card">
+
+        <h2>Find Your Train</h2>
+
+        <p>
+          Enter a train number or train name.
+        </p>
+
+        <div class="rail-form">
+
+          <input
+            class="rail-input"
+            id="trainQuery"
+            type="text"
+            placeholder="Train number or train name"
+          >
+
+          <button class="rail-btn" id="trainSearch">
+            Search Train
+          </button>
+
+        </div>
+
+
+        <div class="result" id="trainResult">
+
+          <div class="result-title">
+            <strong id="trainName">Demo Express</strong>
+            <span class="live">DEMO DATA</span>
+          </div>
+
+          <div class="train-route">
+
+            <div class="station">
+              <strong>NDLS</strong>
+              <small>New Delhi</small>
+            </div>
+
+            <div class="route-line"></div>
+
+            <div class="station">
+              <strong>PNBE</strong>
+              <small>Patna Jn</small>
+            </div>
+
+          </div>
+
+          <div class="result-meta">
+
+            <div class="meta">
+              <small>Current Status</small>
+              <b class="status-good">Running</b>
+            </div>
+
+            <div class="meta">
+              <small>Next Station</small>
+              <b>Prayagraj</b>
+            </div>
+
+            <div class="meta">
+              <small>Expected</small>
+              <b>06:45 PM</b>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- PNR -->
+
+    <section class="rail-section" id="pnr">
+
+      <div class="rail-card">
+
+        <h2>PNR Status</h2>
+
+        <p>
+          Enter your 10-digit PNR number.
+        </p>
+
+        <div class="rail-form">
+
+          <input
+            class="rail-input"
+            id="pnrInput"
+            inputmode="numeric"
+            maxlength="10"
+            placeholder="Enter 10-digit PNR"
+          >
+
+          <button class="rail-btn" id="pnrSearch">
+            Check PNR
+          </button>
+
+        </div>
+
+        <div class="pnr-status result" id="pnrResult">
+
+          <div class="result-title">
+            <strong>PNR Information</strong>
+            <span class="live">DEMO</span>
+          </div>
+
+          <div class="result-meta">
+
+            <div class="meta">
+              <small>Train</small>
+              <b>12345 Demo Express</b>
+            </div>
+
+            <div class="meta">
+              <small>Class</small>
+              <b>3A</b>
+            </div>
+
+            <div class="meta">
+              <small>Status</small>
+              <b class="status-good">CNF</b>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- STATION -->
+
+    <section class="rail-section" id="station">
+
+      <div class="rail-card">
+
+        <h2>Station Search</h2>
+
+        <p>
+          Search by station name or station code.
+        </p>
+
+        <div class="rail-form">
+
+          <input
+            class="rail-input"
+            id="stationInput"
+            placeholder="Example: Patna or PNBE"
+          >
+
+          <button class="rail-btn" id="stationSearch">
+            Find Station
+          </button>
+
+        </div>
+
+        <div class="result" id="stationResult">
+
+          <div class="result-title">
+            <strong>Patna Junction</strong>
+            <span class="live">STATION</span>
+          </div>
+
+          <div class="result-meta">
+
+            <div class="meta">
+              <small>Code</small>
+              <b>PNBE</b>
+            </div>
+
+            <div class="meta">
+              <small>Zone</small>
+              <b>East Central</b>
+            </div>
+
+            <div class="meta">
+              <small>City</small>
+              <b>Patna</b>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- LIVE -->
+
+    <section class="rail-section" id="live">
+
+      <div class="rail-card">
+
+        <h2>Live Train Status</h2>
+
+        <p>
+          Enter a train number to prepare a live status lookup.
+        </p>
+
+        <div class="rail-form">
+
+          <input
+            class="rail-input"
+            id="liveTrainInput"
+            inputmode="numeric"
+            placeholder="Enter train number"
+          >
+
+          <button class="rail-btn" id="liveTrainSearch">
+            Check Live Status
+          </button>
+
+        </div>
+
+        <div class="result" id="liveResult">
+
+          <div class="result-title">
+            <strong>Train 12345</strong>
+            <span class="live">DEMO STATUS</span>
+          </div>
+
+          <div class="train-route">
+
+            <div class="station">
+              <strong>NDLS</strong>
+              <small>Departed</small>
+            </div>
+
+            <div class="route-line"></div>
+
+            <div class="station">
+              <strong>PNBE</strong>
+              <small>Destination</small>
+            </div>
+
+          </div>
+
+          <div class="result-meta">
+
+            <div class="meta">
+              <small>Speed</small>
+              <b>72 km/h</b>
+            </div>
+
+            <div class="meta">
+              <small>Delay</small>
+              <b>08 min</b>
+            </div>
+
+            <div class="meta">
+              <small>Last Update</small>
+              <b>Just now</b>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <div class="rail-grid">
+
+      <section class="rail-card">
+
+        <h2>Recent Searches</h2>
+        <p>Your recent rail searches will appear here.</p>
+
+        <div class="recent-list" id="recentList">
+
+          <div class="recent-item">
+            <div>
+              <b>12345 Demo Express</b>
+              <small>New Delhi → Patna</small>
+            </div>
+            <button>Open</button>
+          </div>
+
+          <div class="recent-item">
+            <div>
+              <b>PNBE</b>
+              <small>Patna Junction</small>
+            </div>
+            <button>Open</button>
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <section class="rail-card">
+
+        <h2>Important</h2>
+
+        <div class="notice">
+          This Rail Mode currently uses demo information.
+          Real-time train running status, PNR status and railway
+          data will require a supported live API or official data
+          source before production use.
+        </div>
+
+      </section>
+
+    </div>
+
+
+    <section class="rail-card">
+
+      <h2>Favourite Trains</h2>
+
+      <p>
+        Save frequently used trains here in the next version.
+      </p>
+
+      <button class="rail-btn secondary" id="favoriteBtn">
+        + Add Favourite Train
+      </button>
+
+    </section>
+
+
+  </main>
+
+
+  <script>
+
+    const tabs = document.querySelectorAll(".rail-tab");
+    const sections = document.querySelectorAll(".rail-section");
+
+    tabs.forEach(tab => {
+
+      tab.addEventListener("click", () => {
+
+        const id = tab.dataset.tab;
+
+        tabs.forEach(item => item.classList.remove("active"));
+        sections.forEach(section => section.classList.remove("active"));
+
+        tab.classList.add("active");
+
+        const target = document.getElementById(id);
+
+        if (target) {
+          target.classList.add("active");
+        }
+
+      });
+
+    });
+
+
+    function showResult(id) {
+
+      const result = document.getElementById(id);
+
+      if (result) {
+        result.classList.add("show");
+      }
+
+    }
+
+
+    document.getElementById("trainSearch")?.addEventListener("click", () => {
+
+      const value =
+        document.getElementById("trainQuery").value.trim();
+
+      if (!value) {
+        alert("Please enter train number or train name.");
+        return;
+      }
+
+      document.getElementById("trainName").textContent =
+        value + " • Demo Result";
+
+      showResult("trainResult");
+
+    });
+
+
+    document.getElementById("pnrSearch")?.addEventListener("click", () => {
+
+      const value =
+        document.getElementById("pnrInput").value.trim();
+
+      if (!/^\d{10}$/.test(value)) {
+        alert("Please enter a valid 10-digit PNR.");
+        return;
+      }
+
+      showResult("pnrResult");
+
+    });
+
+
+    document.getElementById("stationSearch")?.addEventListener("click", () => {
+
+      const value =
+        document.getElementById("stationInput").value.trim();
+
+      if (!value) {
+        alert("Please enter a station name or code.");
+        return;
+      }
+
+      showResult("stationResult");
+
+    });
+
+
+    document.getElementById("liveTrainSearch")?.addEventListener("click", () => {
+
+      const value =
+        document.getElementById("liveTrainInput").value.trim();
+
+      if (!value) {
+        alert("Please enter a train number.");
+        return;
+      }
+
+      showResult("liveResult");
+
+    });
+
+
+    document.getElementById("favoriteBtn")?.addEventListener("click", () => {
+
+      alert(
+        "Favourite Train feature is ready for the next backend/API version."
+      );
+
+    });
+
+  </script>
+
+</body>
+</html>
