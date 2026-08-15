@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta name="theme-color" content="#050916">
+  <meta name="description" content="NEXUS - Everything Connected. One Place.">
+
+  <title>NEXUS</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- BACKGROUND EFFECTS -->
+  <div class="bg-orb orb-a"></div>
+  <div class="bg-orb orb-b"></div>
+  <div class="bg-orb orb-c"></div>
+
+  <!-- TOAST -->
+  <div id="toast" class="toast"></div>
+
+  <!-- TOP BAR -->
+  <header class="topbar">
+
+    <button class="icon-btn" id="menuBtn">
+      ☰
+    </button>
+
+    <div class="brand">
+      <span>NEXUS</span>
+    </div>
+
+    <button class="icon-btn" id="notifyBtn">
+      ♢
+      <span class="dot"></span>
+    </button>
+
+  </header>
+
+
+  <!-- MAIN APP -->
+  <main class="app-shell">
+
+    <!-- HERO -->
+    <section class="hero" id="home">
+
+      <div class="hero-copy">
+
+        <div class="eyebrow">
+          YOUR DIGITAL UTILITY HUB
+        </div>
+
+        <h1>
+          Everything Connected.
+          <br>
+          <span>One Place.</span>
+        </h1>
+
+        <p>
+          Search, banking utilities, railway tools,
+          emergency access and everyday tools in one place.
+        </p>
+
+      </div>
+
+
+      <!-- GLOBAL SEARCH -->
+      <form class="global-search" id="searchForm">
+
+        <span class="search-icon">
+          ⌕
+        </span>
+
+        <input
+          id="globalSearch"
+          type="search"
+          placeholder="Search anything..."
+          autocomplete="off"
+        >
+
+        <button
+          type="button"
+          class="mic"
+          id="voiceBtn"
+          title="Voice Search"
+        >
+          ●
+        </button>
+
+        <button
+          type="submit"
+          class="search-go"
+        >
+          Search
+        </button>
+
+      </form>
+
+
+      <!-- SEARCH SUGGESTIONS -->
+      <div class="chips">
+
+        <button data-query="AI Tools">
+          AI Tools
+        </button>
+
+        <button data-query="Indian Railways">
+          Indian Railways
+        </button>
+
+        <button data-query="Banking Calculator">
+          Banking Calculator
+        </button>
+
+        <button data-query="Nearby Hospital">
+          Nearby Hospital
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- QUICK ACCESS HEADER -->
+    <section class="section-head">
+
+      <div>
+
+        <div class="section-kicker">
+          QUICK ACCESS
+        </div>
+
+        <h2>
+          Choose a mode
+        </h2>
+
+      </div>
+
+      <button
+        class="text-btn"
+        id="editQuick"
+      >
+        Edit
+      </button>
+
+    </section>
+
+
+    <!-- QUICK ACCESS -->
+    <section class="mode-grid">
+
+      <!-- SEARCH -->
+      <button
+        class="mode-card search"
+        data-open="searchPanel"
+      >
+
+        <span class="mode-icon">
+          ⌕
+        </span>
+
+        <b>
+          Search
+        </b>
+
+        <small>
+          Web & quick search
+        </small>
+
+      </button>
+
+
+      <!-- BANK -->
+      <button
+        class="mode-card bank"
+        data-open="bankPanel"
+      >
+
+        <span class="mode-icon">
+          ▥
+        </span>
+
+        <b>
+          Bank
+        </b>
+
+        <small>
+          Smart banking tools
+        </small>
+
+      </button>
+
+
+      <!-- EMERGENCY -->
+      <button
+        class="mode-card emergency"
+        data-open="emergencyPanel"
+      >
+
+        <span class="mode-icon">
+          ✚
+        </span>
+
+        <b>
+          Emergency
+        </b>
+
+        <small>
+          Fast help access
+        </small>
+
+      </button>
+
+
+      <!-- RAIL -->
+      <button
+        class="mode-card rail"
+        data-open="railPanel"
+      >
+
+        <span class="mode-icon">
+          ▰
+        </span>
+
+        <b>
+          Rail
+        </b>
+
+        <small>
+          Train & PNR tools
+        </small>
+
+      </button>
+
+
+      <!-- NEARBY -->
+      <button
+        class="mode-card nearby"
+        data-open="nearbyPanel"
+      >
+
+        <span class="mode-icon">
+          ⌖
+        </span>
+
+        <b>
+          Nearby
+        </b>
+
+        <small>
+          Places around you
+        </small>
+
+      </button>
+
+
+      <!-- TOOLS -->
+      <button
+        class="mode-card tools"
+        data-open="toolsPanel"
+      >
+
+        <span class="mode-icon">
+          ⌘
+        </span>
+
+        <b>
+          Tools
+        </b>
+
+        <small>
+          Everyday utilities
+        </small>
+
+      </button>
+
+
+      <!-- CONTACTS -->
+      <button
+        class="mode-card contacts"
+        data-open="contactsPanel"
+      >
+
+        <span class="mode-icon">
+          ♙
+        </span>
+
+        <b>
+          Contacts
+        </b>
+
+        <small>
+          Important people
+        </small>
+
+      </button>
+
+
+      <!-- MORE -->
+      <button
+        class="mode-card more"
+        data-open="morePanel"
+      >
+
+        <span class="mode-icon">
+          •••
+        </span>
+
+        <b>
+          More
+        </b>
+
+        <small>
+          More NEXUS features
+        </small>
+
+      </button>
+
+    </section>
+
+
+    <!-- EMERGENCY BANNER -->
+    <section class="sos-card">
+
+      <div class="sos-ring">
+        SOS
+      </div>
+
+      <div>
+
+        <div class="sos-title">
+          Emergency Mode
+        </div>
+
+        <p>
+          One tap to open emergency tools.
+          SOS stays protected behind a deliberate action.
+        </p>
+
+      </div>
+
+      <button
+        class="arrow-btn"
+        data-open="emergencyPanel"
+      >
+        ›
+      </button>
+
+    </section>
+
+
+    <!-- RECENT ACTIVITY -->
+    <section class="section-head activity-head">
+
+      <div>
+
+        <div class="section-kicker">
+          RECENT ACTIVITY
+        </div>
+
+        <h2>
+          Your recent tools
+        </h2>
+
+      </div>
+
+      <button
+        class="text-btn"
+        id="clearActivity"
+      >
+        Clear
+      </button>
+
+    </section>
+
+
+    <section
+      class="activity-list"
+      id="activityList"
+    >
+
+      <div class="activity-row">
+
+        <span class="activity-badge rail-b">
+          ▰
+        </span>
+
+        <div>
+
+          <b>
+            Rail Mode
+          </b>
+
+          <small>
+            PNR / train tools ready
+          </small>
+
+        </div>
+
+        <time>
+          Today
+        </time>
+
+      </div>
+
+
+      <div class="activity-row">
+
+        <span class="activity-badge bank-b">
+          ₹
+        </span>
+
+        <div>
+
+          <b>
+            EMI Calculator
+          </b>
+
+          <small>
+            Ready for a new calculation
+          </small>
+
+        </div>
+
+        <time>
+          Yesterday
+        </time>
+
+      </div>
+
+
+      <div class="activity-row">
+
+        <span class="activity-badge search-b">
+          ⌕
+        </span>
+
+        <div>
+
+          <b>
+            Search
+          </b>
+
+          <small>
+            Web search opened
+          </small>
+
+        </div>
+
+        <time>
+          2 days ago
+        </time>
+
+      </div>
+
+    </section>
+
+
+    <!-- ALL PANELS -->
+    <section class="panel-stack">
+
+
+      <!-- SEARCH PANEL -->
+      <section
+        class="panel"
+        id="searchPanel"
+      >
+
+        <div class="panel-head">
+
+          <div>
+
+            <span class="panel-label blue">
+              SEARCH MODE
+            </span>
+
+            <h2>
+              Search the web
+            </h2>
+
+          </div>
+
+          <button class="close-panel">
+            ×
+          </button>
+
+        </div>
+
+
+        <form
+          class="inner-search"
+          id="panelSearchForm"
+        >
+
+          <input
+            id="panelSearch"
+            placeholder="Search the web..."
+          >
+
+          <button>
+            Search
+          </button>
+
+        </form>
+
+
+        <div class="result-note">
+
+          NEXUS search can connect to your
+          preferred search provider.
+
+        </div>
+
+
+        <div class="quick-links">
+
+          <a
+            href="https://www.google.com/"
+            target="_blank"
+          >
+            Google
+          </a>
+
+          <a
+            href="https://www.youtube.com/"
+            target="_blank"
+          >
+            YouTube
+          </a>
+
+          <a
+            href="https://www.wikipedia.org/"
+            target="_blank"
+          >
+            Wikipedia
+          </a>
+
+          <a
+            href="https://www.google.com/maps/"
+            target="_blank"
+          >
+            Maps
+          </a>
+
+        </div>
+
+      </section>
+
+
+      <!-- BANK PANEL -->
+      <section
+        class="panel"
+        id="bankPanel"
+      >
+
+        <div class="panel-head">
+
+          <div>
+
+            <span class="panel-label green">
+              BANK MODE
+            </span>
+
+            <h2>
+              Banking utilities
+            </h2>
+
+          </div>
+
+          <button class="close-panel">
+            ×
+          </button>
+
+        </div>
+
+
+        <div class="tool-grid">
+
+          <button class="tool green" data-tool="IFSC Search">
+            IFSC Search
+          </button>
+
+          <button class="tool green" data-tool="EMI Calculator">
+            EMI Calculator
+          </button>
+
+          <button class="tool green" data-tool="Interest Calculator">
+            Interest Calculator
+          </button>
+
+          <button class="tool green" data-tool="Loan Calculator">
+            Loan Calculator
+          </button>
+
+          <button class="tool green" data-tool="FD Calculator">
+            FD Calculator
+          </button>
+
+          <button class="tool green" data-tool="RD Calculator">
+            RD Calculator
+          </button>
+
+          <button class="tool green" data-tool="Denomination">
+            Denomination
+          </button>
+
+          <button class="tool green" data-tool="Percentage">
+            Percentage
+          </button>
+
+          <button class="tool green" data-tool="GST Calculator">
+            GST Calculator
+          </button>
+
+          <button class="tool green" data-tool="Banking Terms">
+            Banking Terms
+          </button>
+
+          <button class="tool green" data-tool="Important Links">
+            Important Links
+          </button>
+
+          <button class="tool green" data-tool="SWIFT Code">
+            SWIFT Code
+          </button>
+
+        </div>
+
+      </section>
+
+
+      <!-- RAIL PANEL -->
+      <section
+        class="panel"
+        id="railPanel"
+      >
+
+        <div class="panel-head">
+
+          <div>
+
+            <span class="panel-label cyan">
+              RAIL MODE
+            </span>
+
+            <h2>
+              Where Is My Train?
+            </h2>
+
+          </div>
+
+          <button class="close-panel">
+            ×
+          </button>
+
+        </div>
+
+
+        <div class="train-hero">
+
+          <div>
+
+            <span>
+              LIVE RAIL TOOLS
+            </span>
+
+            <strong>
+              Track your journey
+            </strong>
+
+            <p>
+              PNR, train status, route and
+              availability in one place.
+            </p>
+
+          </div>
+
+          <div class="train-art">
+            ▰
+          </div>
+
+        </div>
+
+
+        <div class="tool-grid">
+
+          <button class="tool cyan" data-tool="PNR Status">
+            PNR Status
+          </button>
+
+          <button class="tool cyan" data-tool="Train Search">
+            Train Search
+          </button>
+
+          <button class="tool cyan" data-tool="Live Train Status">
+            Live Train Status
+          </button>
+
+          <button class="tool cyan" data-tool="Train Route">
+            Train Route
+          </button>
+
+          <button class="tool cyan" data-tool="Seat Availability">
+            Seat Availability
+          </button>
+
+          <button class="tool cyan" data-tool="Between Stations">
+            Between Stations
+          </button>
+
+          <button class="tool cyan" data-tool="Arrival / Departure">
+            Arrival / Departure
+          </button>
+
+          <button class="tool cyan" data-tool="Delay Alerts">
+            Delay Alerts
+          </button>
+
+        </div>
+
+
+        <div class="official-links">
+
+          <a
+            href="https://www.indianrail.gov.in/enquiry/PNR/PnrEnquiry.html?locale=en"
+            target="_blank"
+          >
+            Official Indian Railways PNR
+          </a>
+
+          <a
+            href="https://www.indianrail.gov.in/enquiry/SEAT/SeatAvailability.html?locale=en"
+            target="_blank"
+          >
+            Official Seat Availability
+          </a>
+
+        </div>
+
+      </section>
+
+
+      <!-- EMERGENCY PANEL -->
+      <section
+        class="panel"
+        id="emergencyPanel"
+      >
+
+        <div class="panel-head">
+
+          <div>
+
+            <span class="panel-label red">
+              EMERGENCY MODE
+            </span>
+
+            <h2>
+              Help, fast
+            </h2>
+
+          </div>
+
+          <button class="close-panel">
+            ×
+          </button>
+
+        </div>
+
+
+        <div class="sos-center">
+
+          <button
+            id="sosBtn"
+            class="big-sos"
+          >
+            SOS
+          </button>
+
+          <p>
+            Hold for 3 seconds to prepare an SOS action.
+          </p>
+
+        </div>
+
+
+        <div class="emergency-grid">
+
+          <button onclick="callEmergency('112')">
+            Emergency
+            <strong>112</strong>
+          </button>
+
+          <button onclick="callEmergency('102')">
+            Ambulance
+            <strong>102</strong>
+          </button>
+
+          <button onclick="callEmergency('101')">
+            Fire
+            <strong>101</strong>
+          </button>
+
+          <button onclick="shareLocation()">
+            Share Location
+          </button>
+
+        </div>
+
+
+        <div class="safety-note">
+
+          Emergency numbers and services can vary
+          by location. Verify your local emergency
+          services before relying on this screen.
+
+        </div>
+
+      </section>
+
+
+      <!-- NEARBY PANEL -->
+      <section
+        class="panel"
+        id="nearbyPanel"
+      >
+
+        <div class="panel-head">
+
+          <div>
+
+            <span class="panel-label purple">
+              NEARBY
+            </span>
+
+            <h2>
+              Find around you
+            </h2>
+
+          </div>
+
+          <button class="close-panel">
+            ×
+          </button>
+
+        </div>
+
+
+        <div class="nearby-grid">
+
+          <button data-near="ATM">
+            ATM
+          </button>
+
+          <button data-near="Bank">
+            Bank
+          </button>
+
+          <button data-near="Hospital">
+            Hospital
+          </button>
+
+          <button data-near="Pharmacy">
+            Pharmacy
+          </button>
+
+          <button data-near="Petrol Pump">
+            Petrol Pump
+          </button>
+
+          <button data-near="Police Station">
+            Police Station
+          </button>
+
+          <button data-near="Restaurant">
+            Restaurant
+          </button>
+
+          <button data-near="Hotel">
+            Hotel
+          </button>
+
+          <button data-near="Railway Station">
+            Railway Station
+          </button>
+
+        </div>
+
+
+        <button
+          class="map-btn"
+          id="mapBtn"
+        >
+          Open Google Maps
+        </button>
+
+      </section>
+
+
+      <!-- TOOLS PANEL -->
+      <section
+        class="panel"
+        id="toolsPanel"
+      >
+
+        <div class="panel-head">
+
+          <div>
+
+            <span class="panel-label amber">
+              TOOLS
+            </span>
+
+            <h2>
+              Everyday utilities
+            </h2>
+
+          </div>
+
+          <button class="close-panel">
+            ×
+          </button>
+
+        </div>
+
+
+        <div class="tool-grid">
+
+          <button class="tool amber" data-tool="Calculator">
+            Calculator
+          </button>
+
+          <button class="tool amber" data-tool="Age Calculator">
+            Age Calculator
+          </button>
+
+          <button class="tool amber" data-tool="Date Calculator">
+            Date Calculator
+          </button>
+
+          <button class="tool amber" data-tool="Unit Converter">
+            Unit Converter
+          </button>
+
+          <button class="tool amber" data-tool="Currency Converter">
+            Currency Converter
+          </button>
+
+          <button class="tool amber" data-tool="QR Scanner">
+            QR Scanner
+          </button>
+
+          <button class="tool amber" data-tool="Password Generator">
+            Password Generator
+          </button>
+
+          <button class="tool amber" data-tool="Notepad">
+            Notepad
+          </button>
+
+          <button class="tool amber" data-tool="Voice Recorder">
+            Voice Recorder
+          </button>
+
+        </div>
+
+      </section>
+
+
+      <!-- CONTACTS PANEL -->
+      <section
+        class="panel"
+        id="contactsPanel"
+      >
+
+        <div class="panel-head">
+
+          <div>
+
+            <span class="panel-label blue">
+              CONTACTS
+            </span>
+
+            <h2>
+              Important contacts
+            </h2>
+
+          </div>
+
+          <button class="close-panel">
+            ×
+          </button>
+
+        </div>
+
+
+        <div class="empty-card">
+
+          Your important contacts will live here.
+
+          V1 keeps this local to the device until
+          the account sync system is added.
+
+        </div>
+
+
+        <button
+          class="primary-btn"
+          id="addContact"
+        >
+          Add Contact
+        </button>
+
+      </section>
+
+
+      <!-- MORE PANEL -->
+      <section
+        class="panel"
+        id="morePanel"
+      >
+
+        <div class="panel-head">
+
+          <div>
+
+            <span class="panel-label purple">
+              MORE
+            </span>
+
+            <h2>
+              NEXUS services
+            </h2>
+
+          </div>
+
+          <button class="close-panel">
+            ×
+          </button>
+
+        </div>
+
+
+        <div class="more-list">
+
+          <button data-tool="Documents">
+            Documents
+          </button>
+
+          <button data-tool="Notes">
+            Notes
+          </button>
+
+          <button data-tool="Saved Items">
+            Saved Items
+          </button>
+
+          <button data-tool="Notifications">
+            Notifications
+          </button>
+
+          <button data-tool="Settings">
+            Settings
+          </button>
+
+          <a href="admin.html">
+            Admin Panel
+          </a>
+
+        </div>
+
+      </section>
+
+    </section>
+
+  </main>
+
+
+  <!-- BOTTOM NAVIGATION -->
+  <nav class="bottom-nav">
+
+    <button
+      class="active"
+      data-scroll="home"
+    >
+      ⌂
+      <small>
+        Home
+      </small>
+    </button>
+
+
+    <button
+      data-open="searchPanel"
+    >
+      ⌕
+      <small>
+        Search
+      </small>
+    </button>
+
+
+    <button
+      class="core"
+      data-scroll="home"
+    >
+      <span>
+        N
+      </span>
+    </button>
+
+
+    <button
+      data-open="toolsPanel"
+    >
+      ⌘
+      <small>
+        Tools
+      </small>
+    </button>
+
+
+    <button
+      data-open="morePanel"
+    >
+      ♙
+      <small>
+        My Nexus
+      </small>
+    </button>
+
+  </nav>
+
+
+  <!-- JAVASCRIPT -->
+  <script src="app.js"></script>
+
+</body>
+  </html>
