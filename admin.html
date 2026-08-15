@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#050916">
+  <title>NEXUS Admin Panel</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+
+<body>
+
+<div class="admin-layout">
+
+  <aside class="sidebar">
+
+    <div class="admin-brand">
+      <span>N</span>
+      <div>
+        <b>NEXUS</b>
+        <small>ADMIN PANEL</small>
+      </div>
+    </div>
+
+    <nav class="admin-nav">
+
+      <button class="active" data-section="dashboard">
+        <span>⌂</span> Dashboard
+      </button>
+
+      <button data-section="users">
+        <span>♙</span> Users
+      </button>
+
+      <button data-section="roles">
+        <span>◈</span> Roles & Permissions
+      </button>
+
+      <button data-section="modules">
+        <span>▦</span> App Modules
+      </button>
+
+      <button data-section="announcements">
+        <span>◉</span> Announcements
+      </button>
+
+      <button data-section="notifications">
+        <span>♢</span> Notifications
+      </button>
+
+      <button data-section="analytics">
+        <span>▤</span> Reports & Analytics
+      </button>
+
+      <button data-section="settings">
+        <span>⚙</span> System Settings
+      </button>
+
+      <button data-section="audit">
+        <span>◌</span> Audit Logs
+      </button>
+
+      <button data-section="status">
+        <span>●</span> System Status
+      </button>
+
+      <button data-section="legal">
+        <span>§</span> Legal & Privacy
+      </button>
+
+    </nav>
+
+    <a href="index.html" class="back-app">
+      ← Open NEXUS App
+    </a>
+
+  </aside>
+
+
+  <main class="admin-main">
+
+    <header class="admin-top">
+
+      <button class="mobile-menu" id="mobileMenu">☰</button>
+
+      <div class="admin-search">
+        ⌕
+        <input
+          type="search"
+          id="adminSearch"
+          placeholder="Search admin panel..."
+        >
+      </div>
+
+      <button class="top-notification" id="adminNotification">
+        ♢
+        <span></span>
+      </button>
+
+      <div class="admin-user">
+        <div class="admin-avatar">A</div>
+        <div>
+          <b>Super Admin</b>
+          <small>Administrator</small>
+        </div>
+      </div>
+
+    </header>
+
+
+    <section class="admin-section active" id="dashboard">
+
+      <div class="dashboard-head">
+
+        <div>
+          <span>OVERVIEW</span>
+          <h1>Dashboard</h1>
+          <p>Monitor and manage your NEXUS platform.</p>
+        </div>
+
+        <button class="primary-admin-btn" id="reportBtn">
+          ↓ Download Report
+        </button>
+
+      </div>
+
+
+      <div class="stats-grid">
+
+        <div class="stat-card">
+          <div class="stat-icon purple">♙</div>
+          <small>Total Users</small>
+          <strong>25,689</strong>
+          <em>+12.5%</em>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon green">●</div>
+          <small>Active Users</small>
+          <strong>18,432</strong>
+          <em>+8.2%</em>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon blue">◉</div>
+          <small>Today's Active</small>
+          <strong>5,689</strong>
+          <em>+15.3%</em>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon cyan">⌕</div>
+          <small>Total Searches</small>
+          <strong>1.25M</strong>
+          <em>+9.6%</em>
+        </div>
+
+      </div>
+
+
+      <div class="dashboard-grid">
+
+        <div class="admin-card chart-card">
+
+          <div class="card-title">
+            <div>
+              <b>User Growth</b>
+              <small>New registered users</small>
+            </div>
+
+            <select>
+              <option>This Month</option>
+              <option>This Year</option>
+            </select>
+          </div>
+
+          <div class="chart">
+            <div class="chart-lines"></div>
+
+            <svg
+              viewBox="0 0 600 220"
+              preserveAspectRatio="none"
+            >
+              <polyline
+                points="0,180 45,155 85,165 125,125 175,138 220,92 270,110 320,68 365,84 415,52 465,68 520,35 600,42"
+                fill="none"
+                stroke="#9a63ff"
+                stroke-width="4"
+              />
+            </svg>
+          </div>
+
+          <div class="chart-labels">
+            <span>Jan</span>
+            <span>Feb</span>
+            <span>Mar</span>
+            <span>Apr</span>
+            <span>May</span>
+            <span>Jun</span>
+          </div>
+
+        </div>
+
+
+        <div class="admin-card">
+
+          <div class="card-title">
+            <div>
+              <b>Module Usage</b>
+              <small>Last 30 days</small>
+            </div>
+          </div>
+
+          <div class="donut">
+            <div>
+              <strong>256.8K</strong>
+              <small>Total</small>
+            </div>
+          </div>
+
+          <div class="legend">
+            <span><i class="search-color"></i> Search 40%</span>
+            <span><i class="bank-color"></i> Bank 22%</span>
+            <span><i class="rail-color"></i> Rail 18%</span>
+            <span><i class="emergency-color"></i> Emergency 10%</span>
+            <span><i class="nearby-color"></i> Nearby 6%</span>
+            <span><i class="tools-color"></i> Tools 4%</span>
+          </div>
+
+        </div>
+
+
+        <div class="admin-card">
+
+          <div class="card-title">
+            <b>Top Active Modules</b>
+            <span>Usage</span>
+          </div>
+
+          <ol class="rank-list">
+            <li><b>Search</b><span>102.6K</span></li>
+            <li><b>Bank Mode</b><span>56.3K</span></li>
+            <li><b>Rail Mode</b><span>45.8K</span></li>
+            <li><b>Emergency</b><span>25.6K</span></li>
+            <li><b>Nearby</b><span>15.4K</span></li>
+          </ol>
+
+        </div>
+
+
+        <div class="admin-card">
+
+          <div class="card-title">
+            <b>System Status</b>
+            <span class="live-label">LIVE</span>
+          </div>
+
+          <div class="system-status">
+
+            <div>
+              <span class="status-indicator"></span>
+              <b>App Server</b>
+              <em>Operational</em>
+            </div>
+
+            <div>
+              <span class="status-indicator"></span>
+              <b>Database</b>
+              <em>Operational</em>
+            </div>
+
+            <div>
+              <span class="status-warning"></span>
+              <b>Rail API</b>
+              <em class="warning-text">Not Connected</em>
+            </div>
+
+            <div>
+              <span class="status-indicator"></span>
+              <b>Notifications</b>
+              <em>Operational</em>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="lower-grid">
+
+        <div class="admin-card">
+
+          <div class="card-title">
+            <b>Recent Activity</b>
+            <button class="link-btn">View All</button>
+          </div>
+
+          <div class="activity-list">
+
+            <div>
+              <span>Super Admin updated app settings</span>
+              <small>10:30 AM</small>
+            </div>
+
+            <div>
+              <span>Rail module configuration opened</span>
+              <small>10:15 AM</small>
+            </div>
+
+            <div>
+              <span>Emergency module reviewed</span>
+              <small>09:50 AM</small>
+            </div>
+
+            <div>
+              <span>New announcement draft created</span>
+              <small>09:30 AM</small>
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="admin-card">
+
+          <div class="card-title">
+            <b>Quick Actions</b>
+          </div>
+
+          <div class="quick-actions">
+
+            <button data-action="announcement">
+              + Add Announcement
+            </button>
+
+            <button data-action="notification">
+              ♢ Send Notification
+            </button>
+
+            <button data-action="users">
+              ♙ Manage Users
+            </button>
+
+            <button data-action="reports">
+              ▤ View Reports
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <div class="admin-card">
+
+          <div class="card-title">
+            <b>App Version</b>
+          </div>
+
+          <div class="version-box">
+            <span>N</span>
+
+            <div>
+              <strong>NEXUS v1.0.0</strong>
+              <small>Frontend prototype</small>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <section class="admin-section" id="users">
+
+      <div class="page-heading">
+        <span>USER MANAGEMENT</span>
+        <h1>Users</h1>
+        <p>Manage NEXUS user accounts and access.</p>
+      </div>
+
+      <div class="admin-card">
+
+        <div class="table-header">
+          <b>User Directory</b>
+          <button class="primary-admin-btn">+ Add User</button>
+        </div>
+
+        <div class="table-wrapper">
+
+          <table>
+
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Status</th>
+                <th>Joined</th>
+                <th>Last Active</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+              <tr>
+                <td>Demo User</td>
+                <td><span class="badge active-badge">Active</span></td>
+                <td>Today</td>
+                <td>Just now</td>
+                <td><button class="table-btn">View</button></td>
+              </tr>
+
+              <tr>
+                <td>NEXUS Tester</td>
+                <td><span class="badge active-badge">Active</span></td>
+                <td>Yesterday</td>
+                <td>2 hours ago</td>
+                <td><button class="table-btn">View</button></td>
+              </tr>
+
+              <tr>
+                <td>Example Account</td>
+                <td><span class="badge inactive-badge">Inactive</span></td>
+                <td>Aug 10</td>
+                <td>Aug 12</td>
+                <td><button class="table-btn">View</button></td>
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <section class="admin-section" id="roles">
+
+      <div class="page-heading">
+        <span>SECURITY</span>
+        <h1>Roles & Permissions</h1>
+        <p>Control what each administrator can access.</p>
+      </div>
+
+      <div class="role-grid">
+
+        <div class="admin-card role-card">
+          <div class="role-icon purple">SA</div>
+          <h3>Super Admin</h3>
+          <p>Full system access.</p>
+          <button>Manage</button>
+        </div>
+
+        <div class="admin-card role-card">
+          <div class="role-icon blue">A</div>
+          <h3>Admin</h3>
+          <p>User and module management.</p>
+          <button>Manage</button>
+        </div>
+
+        <div class="admin-card role-card">
+          <div class="role-icon green">S</div>
+          <h3>Support</h3>
+          <p>Support and user assistance.</p>
+          <button>Manage</button>
+        </div>
+
+        <div class="admin-card role-card">
+          <div class="role-icon amber">V</div>
+          <h3>Viewer</h3>
+          <p>Reports and read-only access.</p>
+          <button>Manage</button>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <section class="admin-section" id="modules">
+
+      <div class="page-heading">
+        <span>APP CONTROL</span>
+        <h1>App Modules</h1>
+        <p>Control the availability of NEXUS modules.</p>
+      </div>
+
+      <div class="module-admin-grid">
+
+        <div class="admin-card module-admin-card">
+          <div class="module-symbol blue">⌕</div>
+          <div>
+            <h3>Search</h3>
+            <p>Universal web search</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" checked>
+            <span></span>
+          </label>
+        </div>
+
+        <div class="admin-card module-admin-card">
+          <div class="module-symbol green">₹</div>
+          <div>
+            <h3>Bank Mode</h3>
+            <p>Banking utilities</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" checked>
+            <span></span>
+          </label>
+        </div>
+
+        <div class="admin-card module-admin-card">
+          <div class="module-symbol cyan">▰</div>
+          <div>
+            <h3>Rail Mode</h3>
+            <p>Train and PNR tools</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" checked>
+            <span></span>
+          </label>
+        </div>
+
+        <div class="admin-card module-admin-card">
+          <div class="module-symbol red">✚</div>
+          <div>
+            <h3>Emergency</h3>
+            <p>Emergency utilities</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" checked>
+            <span></span>
+          </label>
+        </div>
+
+        <div class="admin-card module-admin-card">
+          <div class="module-symbol purple">⌖</div>
+          <div>
+            <h3>Nearby</h3>
+            <p>Nearby places</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" checked>
+            <span></span>
+          </label>
+        </div>
+
+        <div class="admin-card module-admin-card">
+          <div class="module-symbol amber">⌘</div>
+          <div>
+            <h3>Tools</h3>
+            <p>Utility tools</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" checked>
+            <span></span>
+          </label>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <section class="admin-section" id="announcements">
+
+      <div class="page-heading">
+        <span>COMMUNICATION</span>
+        <h1>Announcements</h1>
+        <p>Publish important information to NEXUS users.</p>
+      </div>
+
+      <div class="admin-card form-card">
+
+        <label>Announcement Title</label>
+
+        <input
+          id="announcementTitle"
+          placeholder="Enter announcement title"
+        >
+
+        <label>Message</label>
+
+        <textarea
+          id="announcementMessage"
+          rows="6"
+          placeholder="Write your announcement..."
+        ></textarea>
+
+        <button
+          class="primary-admin-btn"
+          id="publishAnnouncement"
+        >
+          Publish Announcement
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <section class="admin-section" id="notifications">
+
+      <div class="page-heading">
+        <span>COMMUNICATION</span>
+        <h1>Notifications</h1>
+        <p>Send notifications to NEXUS users.</p>
+      </div>
+
+      <div class="admin-card form-card">
+
+        <label>Notification Title</label>
+
+        <input
+          id="notificationTitle"
+          placeholder="Notification title"
+        >
+
+        <label>Message</label>
+
+        <textarea
+          id="notificationMessage"
+          rows="5"
+          placeholder="Notification message..."
+        ></textarea>
+
+        <button
+          class="primary-admin-btn"
+          id="sendNotification"
+        >
+          Send Notification
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <section class="admin-section" id="analytics">
+
+      <div class="page-heading">
+        <span>DATA</span>
+        <h1>Reports & Analytics</h1>
+        <p>Understand how users interact with NEXUS.</p>
+      </div>
+
+      <div class="analytics-grid">
+
+        <div class="admin-card">
+          <small>Searches</small>
+          <strong>1,250,000</strong>
+          <em>+9.6%</em>
+        </div>
+
+        <div class="admin-card">
+          <small>Bank Tools</small>
+          <strong>56,300</strong>
+          <em>+11.2%</em>
+        </div>
+
+        <div class="admin-card">
+          <small>Rail Tools</small>
+          <strong>45,800</strong>
+          <em>+18.4%</em>
+        </div>
+
+        <div class="admin-card">
+          <small>Nearby Searches</small>
+          <strong>15,400</strong>
+          <em>+7.8%</em>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <section class="admin-section" id="settings">
+
+      <div class="page-heading">
+        <span>CONFIGURATION</span>
+        <h1>System Settings</h1>
+        <p>Manage general NEXUS settings.</p>
+      </div>
+
+      <div class="admin-card settings-card">
+
+        <div class="setting-row">
+          <div>
+            <b>Maintenance Mode</b>
+            <small>Temporarily disable the public app.</small>
+          </div>
+
+          <label class="switch">
+            <input type="checkbox">
+            <span></span>
+          </label>
+        </div>
+
+        <div class="setting-row">
+          <div>
+            <b>New User Registration</b>
+            <small>Allow new users to create accounts.</small>
+          </div>
+
+          <label class="switch">
+            <input type="checkbox" checked>
+            <span></span>
+          </label>
+        </div>
+
+        <div class="setting-row">
+          <div>
+            <b>Public Search</b>
+            <small>Allow users to access search mode.</small>
+          </div>
+
+          <label class="switch">
+            <input type="checkbox" checked>
+            <span></span>
+          </label>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <section class="admin-section" id="audit">
+
+      <div class="page-heading">
+        <span>SECURITY</span>
+        <h1>Audit Logs</h1>
+        <p>Track important administrative actions.</p>
+      </div>
+
+      <div class="admin-card audit-list">
+
+        <div>
+          <b>Super Admin</b>
+          <span>Updated system settings</span>
+          <small>Today, 10:30 AM</small>
+        </div>
+
+        <div>
+          <b>Super Admin</b>
+          <span>Opened Rail Module settings</span>
+          <small>Today, 10:15 AM</small>
+        </div>
+
+        <div>
+          <b>Admin</b>
+          <span>Reviewed emergency configuration</span>
+          <small>Today, 09:50 AM</small>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <section class="admin-section" id="status">
+
+      <div class="page-heading">
+        <span>MONITORING</span>
+        <h1>System Status</h1>
+        <p>Check NEXUS service health.</p>
+      </div>
+
+      <div class="status-grid">
+
+        <div class="admin-card service-card">
+          <span class="service-dot good"></span>
+          <div>
+            <b>App Server</b>
+            <small>Operational</small>
+          </div>
+        </div>
+
+        <div class="admin-card service-card">
+          <span class="service-dot good"></span>
+          <div>
+            <b>Database</b>
+            <small>Operational</small>
+          </div>
+        </div>
+
+        <div class="admin-card service-card">
+          <span class="service-dot warning"></span>
+          <div>
+            <b>Rail API</b>
+            <small>Not Connected</small>
+          </div>
+        </div>
+
+        <div class="admin-card service-card">
+          <span class="service-dot good"></span>
+          <div>
+            <b>Notifications</b>
+            <small>Operational</small>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <section class="admin-section" id="legal">
+
+      <div class="page-heading">
+        <span>LEGAL</span>
+        <h1>Legal & Privacy</h1>
+        <p>Manage NEXUS legal information.</p>
+      </div>
+
+      <div class="legal-grid">
+
+        <button class="admin-card legal-card">
+          <span>§</span>
+          <b>Privacy Policy</b>
+          <small>Data and privacy information</small>
+        </button>
+
+        <button class="admin-card legal-card">
+          <span>◈</span>
+          <b>Terms of Service</b>
+          <small>User terms and conditions</small>
+        </button>
+
+        <button class="admin-card legal-card">
+          <span>©</span>
+          <b>License</b>
+          <small>Software license information</small>
+        </button>
+
+        <button class="admin-card legal-card">
+          <span>N</span>
+          <b>About NEXUS</b>
+          <small>Product and developer information</small>
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <footer>
+      © 2026 NEXUS. Admin prototype.
+      Production authentication, database and server-side permissions
+      will be added before launch.
+    </footer>
+
+  </main>
+
+</div>
+
+<div id="adminToast" class="admin-toast"></div>
+
+<script src="admin.js"></script>
+
+</body>
+</html>
