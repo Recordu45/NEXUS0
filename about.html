@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#050916">
+
+  <title>About NEXUS</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+
+    .about-page {
+      width: min(950px, calc(100% - 28px));
+      margin: auto;
+      padding: 45px 0 80px;
+    }
+
+    .about-back {
+      display: inline-block;
+      margin-bottom: 18px;
+      color: #a678ff;
+      text-decoration: none;
+      font-size: 12px;
+    }
+
+    .about-hero {
+      position: relative;
+      overflow: hidden;
+      padding: 38px 28px;
+      border: 1px solid rgba(145,91,255,.25);
+      border-radius: 25px;
+      background:
+        radial-gradient(
+          circle at 85% 20%,
+          rgba(67,151,255,.20),
+          transparent 35%
+        ),
+        radial-gradient(
+          circle at 10% 100%,
+          rgba(143,72,255,.18),
+          transparent 35%
+        ),
+        rgba(8,14,30,.92);
+      box-shadow: 0 25px 70px rgba(0,0,0,.32);
+    }
+
+    .nexus-logo {
+      width: 76px;
+      height: 76px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 20px;
+      border-radius: 23px;
+      color: #e8ddff;
+      font-size: 34px;
+      font-weight: 800;
+      background:
+        radial-gradient(
+          circle,
+          #44209c,
+          #12102d 68%
+        );
+      border: 1px solid #9a63ff;
+      box-shadow:
+        0 0 40px rgba(145,91,255,.30);
+    }
+
+    .about-hero h1 {
+      margin: 0;
+      font-size: clamp(38px, 7vw, 65px);
+      letter-spacing: -2px;
+    }
+
+    .about-hero h1 span {
+      background: linear-gradient(
+        90deg,
+        #a678ff,
+        #32c7ff
+      );
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .about-hero p {
+      max-width: 700px;
+      margin: 15px 0 0;
+      color: #9ba7c0;
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .about-card {
+      padding: 23px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(8,14,30,.84);
+    }
+
+    .about-card h2 {
+      margin: 0 0 11px;
+      font-size: 18px;
+    }
+
+    .about-card p,
+    .about-card li {
+      color: #a8b3c8;
+      font-size: 12px;
+      line-height: 1.75;
+    }
+
+    .about-card ul {
+      padding-left: 19px;
+      margin-bottom: 0;
+    }
+
+    .owner-card {
+      display: flex;
+      align-items: center;
+      gap: 17px;
+    }
+
+    .owner-avatar {
+      width: 65px;
+      height: 65px;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      border-radius: 19px;
+      background: linear-gradient(
+        135deg,
+        #5430a8,
+        #237ecb
+      );
+      color: #fff;
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    .owner-card h2 {
+      margin-bottom: 5px;
+    }
+
+    .owner-card p {
+      margin: 0;
+    }
+
+    .info-list {
+      display: grid;
+      gap: 0;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .info-row:last-child {
+      border-bottom: 0;
+    }
+
+    .info-row span {
+      color: #76829b;
+      font-size: 10px;
+    }
+
+    .info-row strong {
+      color: #dce4f5;
+      font-size: 10px;
+      text-align: right;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .feature {
+      padding: 17px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(255,255,255,.025);
+    }
+
+    .feature-icon {
+      font-size: 23px;
+      margin-bottom: 12px;
+    }
+
+    .feature b {
+      display: block;
+      font-size: 11px;
+    }
+
+    .feature small {
+      display: block;
+      margin-top: 6px;
+      color: #7e8aa3;
+      font-size: 9px;
+      line-height: 1.5;
+    }
+
+    .legal-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 15px;
+    }
+
+    .legal-links a {
+      padding: 10px 13px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: rgba(255,255,255,.03);
+      color: #a9c7ff;
+      text-decoration: none;
+      font-size: 10px;
+    }
+
+    .about-footer {
+      margin-top: 28px;
+      padding: 20px;
+      color: #59657e;
+      border-top: 1px solid var(--line);
+      text-align: center;
+      font-size: 9px;
+      line-height: 1.7;
+    }
+
+    @media (max-width: 700px) {
+
+      .about-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .feature-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+    }
+
+    @media (max-width: 450px) {
+
+      .about-page {
+        padding-top: 30px;
+      }
+
+      .about-hero {
+        padding: 28px 20px;
+      }
+
+      .about-hero h1 {
+        font-size: 40px;
+      }
+
+      .feature-grid {
+        grid-template-columns: 1fr;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+  <div class="bg-orb orb-a"></div>
+  <div class="bg-orb orb-b"></div>
+  <div class="bg-orb orb-c"></div>
+
+
+  <main class="about-page">
+
+
+    <a
+      href="index.html"
+      class="about-back"
+    >
+      ← Back to NEXUS
+    </a>
+
+
+    <!-- HERO -->
+
+    <section class="about-hero">
+
+      <div class="nexus-logo">
+        N
+      </div>
+
+      <div class="section-kicker">
+        ABOUT THE PROJECT
+      </div>
+
+      <h1>
+        <span>NEXUS</span>
+      </h1>
+
+      <p>
+        One intelligent utility platform designed to bring
+        search, banking tools, railway utilities, emergency
+        assistance, nearby services, and everyday tools into
+        one simple interface.
+      </p>
+
+    </section>
+
+
+    <!-- OWNER + PROJECT -->
+
+    <div class="about-grid">
+
+
+      <section class="about-card">
+
+        <div class="owner-card">
+
+          <div class="owner-avatar">
+            A
+          </div>
+
+          <div>
+
+            <h2>
+              Adarsh Rajput
+            </h2>
+
+            <p>
+              Founder & Project Owner
+            </p>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <section class="about-card">
+
+        <h2>
+          Project Information
+        </h2>
+
+        <div class="info-list">
+
+          <div class="info-row">
+            <span>
+              Project
+            </span>
+
+            <strong>
+              NEXUS
+            </strong>
+          </div>
+
+          <div class="info-row">
+            <span>
+              Version
+            </span>
+
+            <strong>
+              1.0.0
+            </strong>
+          </div>
+
+          <div class="info-row">
+            <span>
+              Status
+            </span>
+
+            <strong>
+              Active Development
+            </strong>
+          </div>
+
+          <div class="info-row">
+            <span>
+              Year
+            </span>
+
+            <strong>
+              2026
+            </strong>
+          </div>
+
+        </div>
+
+      </section>
+
+
+    </div>
+
+
+    <!-- VISION -->
+
+    <section class="about-card" style="margin-top:14px;">
+
+      <h2>
+        Our Vision
+      </h2>
+
+      <p>
+        NEXUS is being developed around a simple idea:
+        instead of switching between many different apps for
+        everyday tasks, users should have a single intelligent
+        starting point.
+      </p>
+
+      <p>
+        The project is designed to grow gradually. Search,
+        banking utilities, train information, emergency tools,
+        nearby services, calculators, and other modules can be
+        connected through one consistent NEXUS interface.
+      </p>
+
+    </section>
+
+
+    <!-- FEATURES -->
+
+    <section class="about-card" style="margin-top:14px;">
+
+      <h2>
+        NEXUS Modules
+      </h2>
+
+      <div class="feature-grid">
+
+
+        <div class="feature">
+
+          <div class="feature-icon">
+            ⌕
+          </div>
+
+          <b>
+            Search
+          </b>
+
+          <small>
+            Fast access to web search and information.
+          </small>
+
+        </div>
+
+
+        <div class="feature">
+
+          <div class="feature-icon">
+            ₹
+          </div>
+
+          <b>
+            Bank Mode
+          </b>
+
+          <small>
+            Everyday banking and finance utilities.
+          </small>
+
+        </div>
+
+
+        <div class="feature">
+
+          <div class="feature-icon">
+            ▰
+          </div>
+
+          <b>
+            Rail Mode
+          </b>
+
+          <small>
+            Train, PNR and railway-related tools.
+          </small>
+
+        </div>
+
+
+        <div class="feature">
+
+          <div class="feature-icon">
+            ✚
+          </div>
+
+          <b>
+            Emergency
+          </b>
+
+          <small>
+            Emergency contacts, location and safety tools.
+          </small>
+
+        </div>
+
+
+        <div class="feature">
+
+          <div class="feature-icon">
+            ⌖
+          </div>
+
+          <b>
+            Nearby
+          </b>
+
+          <small>
+            Discover useful places and services nearby.
+          </small>
+
+        </div>
+
+
+        <div class="feature">
+
+          <div class="feature-icon">
+            ⌘
+          </div>
+
+          <b>
+            Tools
+          </b>
+
+          <small>
+            Calculators and practical everyday utilities.
+          </small>
+
+        </div>
+
+
+      </div>
+
+    </section>
+
+
+    <!-- DEVELOPMENT -->
+
+    <section class="about-card" style="margin-top:14px;">
+
+      <h2>
+        Development Status
+      </h2>
+
+      <p>
+        NEXUS is currently an actively developing project.
+        The present version focuses on the interface, navigation,
+        module structure, administration panel, and core frontend
+        interactions.
+      </p>
+
+      <ul>
+
+        <li>
+          Main NEXUS interface
+        </li>
+
+        <li>
+          Search mode
+        </li>
+
+        <li>
+          Bank utility section
+        </li>
+
+        <li>
+          Emergency section
+        </li>
+
+        <li>
+          Rail / Where Is My Train section
+        </li>
+
+        <li>
+          Nearby services
+        </li>
+
+        <li>
+          Admin dashboard
+        </li>
+
+        <li>
+          Privacy, license and project information pages
+        </li>
+
+      </ul>
+
+    </section>
+
+
+    <!-- LEGAL LINKS -->
+
+    <section class="about-card" style="margin-top:14px;">
+
+      <h2>
+        Project Documents
+      </h2>
+
+      <p>
+        Read the documents that explain how NEXUS is intended
+        to operate and how the project is licensed.
+      </p>
+
+      <div class="legal-links">
+
+        <a href="privacy.html">
+          Privacy Policy
+        </a>
+
+        <a href="license.html">
+          License
+        </a>
+
+        <a href="admin.html">
+          Admin Panel
+        </a>
+
+      </div>
+
+    </section>
+
+
+    <footer class="about-footer">
+
+      NEXUS © 2026 Adarsh Rajput.
+      All rights reserved.
+
+      <br>
+
+      Built as an independent project.
+
+      <br>
+
+      NEXUS is currently under active development.
+
+    </footer>
+
+
+  </main>
+
+</body>
+</html>
