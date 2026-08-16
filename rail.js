@@ -1,1533 +1,739 @@
-/* ==========================================
-   NEXUS RAIL MODE V3
-   IN-APP RAIL TOOLS
-========================================== */
+/* =========================================================
+   NEXUS RAIL MODE
+   Rail Engine V2
+   ========================================================= */
 
 (() => {
   "use strict";
 
-  const $ = (selector, root = document) =>
-    root.querySelector(selector);
+  const STORAGE_KEY = "nexus_rail_history";
 
-  const TOOLS = {
-    "PNR Status": {
-      title: "PNR Status",
-      subtitle: "Check your railway booking status",
-      type: "pnr"
-    },
-
-    "Train Search": {
-      title: "Train Search",
-      subtitle: "Find trains for your journey",
-      type: "train"
-    },
-
-    "Live Train Status": {
-      title: "Live Train Status",
-      subtitle: "Track a train by train number",
-      type: "live"
-    },
-
-    "Train Route": {
-      title: "Train Route",
-      subtitle: "View route information",
-      type: "route"
-    },
-
-    "Seat Availability": {
-      title: "Seat Availability",
-      subtitle: "Check seats for your journey",
-      type: "seat"
-    },
-
-    "Between Stations": {
-      title: "Between Stations",
-      subtitle: "Find trains between two stations",
-      type: "between"
-    },
-
-    "Arrival / Departure": {
-      title: "Arrival / Departure",
-      subtitle: "Check station train timings",
-      type: "arrival"
-    },
-
-    "Delay Alerts": {
-      title: "Delay Alerts",
-      subtitle: "Check delay information",
-      type: "delay"
-    }
+  const railState = {
+    currentMode: null,
+    loading: false
   };
 
+  /* =========================================================
+     HELPERS
+     ========================================================= */
 
-  /* ==========================================
-     TOAST
-  ========================================== */
+  function $(selector, parent = document) {
+    return parent.querySelector(selector);
+  }
+
+  function $$(selector, parent = document) {
+    return [...parent.querySelectorAll(selector)];
+  }
+
+  function escapeHTML(value) {
+    return String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
 
   function showToast(message) {
-
-    if (typeof window.toast === "function") {
-      window.toast(message);
-      return;
-    }
-
     const toast = $("#toast");
 
-    if (!toast) return;
+    if (!toast) {
+      alert(message);
+      return;
+    }
 
     toast.textContent = message;
     toast.classList.add("show");
 
-    clearTimeout(window.nexusRailToast);
+    clearTimeout(window.nexusRailToastTimer);
 
-    window.nexusRailToast = setTimeout(() => {
+    window.nexusRailToastTimer = setTimeout(() => {
       toast.classList.remove("show");
-    }, 2200);
+    }, 2500);
   }
 
+  function setLoading(button, loading, text = "Processing...") {
+    if (!button) return;
 
-  /* ==========================================
-     ACTIVITY
-  ========================================== */
+    if (loading) {
+      button.dataset.originalText = button.textContent;
+      button.disabled = true;
+      button.textContent = text;
+      button.classList.add("is-loading");
+    } else {
+      button.disabled = false;
+      button.textContent =
+        button.dataset.originalText || "Continue";
+      button.classList.remove("is-loading");
+    }
+  }
 
-  function saveActivity(title) {
+  /* =========================================================
+     HISTORY
+     ========================================================= */
 
+  function getHistory() {
     try {
-
-      const old = JSON.parse(
-        localStorage.getItem("nexusActivity") || "[]"
+      return JSON.parse(
+        localStorage.getItem(STORAGE_KEY) || "[]"
       );
-
-      old.unshift({
-        title: title,
-        subtitle: "Rail Mode",
-        time: new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit"
-        })
-      });
-
-      localStorage.setItem(
-        "nexusActivity",
-        JSON.stringify(old.slice(0, 10))
-      );
-
-    } catch (error) {}
-
+    } catch {
+      return [];
+    }
   }
 
+  function saveHistory(type, data) {
+    const history = getHistory();
 
-  /* ==========================================
-     CLOSE TOOL
-  ========================================== */
+    history.unshift({
+      type,
+      data,
+      time: new Date().toISOString()
+    });
 
-  function closeRailTool() {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify(history.slice(0, 20))
+    );
+  }
 
-    const screen =
-      $("#nexusRailToolScreen");
+  /* =========================================================
+     RESULT AREA
+     ========================================================= */
 
-    if (screen) {
-      screen.remove();
+  function createResultBox(panel) {
+    if (!panel) return null;
+
+    let result = $(".rail-result", panel);
+
+    if (!result) {
+      result = document.createElement("div");
+      result.className = "rail-result";
+
+      panel.appendChild(result);
     }
 
+    return result;
   }
 
+  function showResult(panel, title, message, type = "info") {
+    const result = createResultBox(panel);
 
-  /* ==========================================
-     OPEN TOOL
-  ========================================== */
+    if (!result) return;
 
-  function openRailTool(toolName) {
+    result.className = `rail-result ${type}`;
 
-    const config =
-      TOOLS[toolName];
-
-    if (!config) return;
-
-    saveActivity(toolName);
-
-    closeRailTool();
-
-
-    const panel =
-      $("#railPanel");
-
-    if (!panel) return;
-
-
-    const screen =
-      document.createElement("div");
-
-    screen.id =
-      "nexusRailToolScreen";
-
-
-    screen.innerHTML = `
-
-      <div class="nexus-rail-tool-head">
-
-        <button
-          type="button"
-          id="nexusRailBack"
-          class="nexus-rail-back"
-        >
-          ←
-        </button>
-
-
-        <div>
-
-          <span class="panel-label cyan">
-            RAIL MODE
-          </span>
-
-          <h3>
-            ${config.title}
-          </h3>
-
-          <p>
-            ${config.subtitle}
-          </p>
-
-        </div>
-
+    result.innerHTML = `
+      <div class="rail-result-icon">
+        ${type === "error" ? "!" : "✓"}
       </div>
 
-
-      <div
-        id="nexusRailToolBody"
-        class="nexus-rail-tool-body"
-      ></div>
-
+      <div class="rail-result-content">
+        <strong>${escapeHTML(title)}</strong>
+        <p>${escapeHTML(message)}</p>
+      </div>
     `;
 
+    result.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest"
+    });
+  }
 
-    const hero =
-      $(".train-hero", panel);
+  /* =========================================================
+     VALIDATION
+     ========================================================= */
 
-    const toolGrid =
-      $(".tool-grid", panel);
+  function validPNR(value) {
+    return /^\d{10}$/.test(value.trim());
+  }
 
+  function validTrainNumber(value) {
+    return /^\d{4,6}$/.test(value.trim());
+  }
 
-    if (hero) {
+  function validStation(value) {
+    return value.trim().length >= 2;
+  }
 
-      hero.after(screen);
+  /* =========================================================
+     PNR
+     ========================================================= */
 
-    } else if (toolGrid) {
+  function setupPNR(panel) {
+    if (!panel) return;
 
-      toolGrid.after(screen);
+    const input =
+      $("input[placeholder*='PNR']", panel) ||
+      $("input[type='text']", panel);
 
-    } else {
-
-      panel.appendChild(screen);
-
-    }
-
-
-    const backButton =
-      $("#nexusRailBack");
-
-
-    if (backButton) {
-
-      backButton.addEventListener(
-        "click",
-        closeRailTool
+    const button =
+      $("button[type='submit']", panel) ||
+      $$("button", panel).find(
+        btn => /check pnr/i.test(btn.textContent)
       );
 
-    }
+    if (!input || !button) return;
 
+    if (input.dataset.railBound) return;
+    input.dataset.railBound = "1";
 
-    renderToolForm(
-      config.type
-    );
+    input.inputMode = "numeric";
+    input.maxLength = 10;
 
-  }
+    input.addEventListener("input", () => {
+      input.value = input.value
+        .replace(/\D/g, "")
+        .slice(0, 10);
+    });
 
-
-  /* ==========================================
-     RESULT
-  ========================================== */
-
-  function setResult(html) {
-
-    const result =
-      $("#railResult");
-
-    if (result) {
-      result.innerHTML = html;
-    }
-
-  }
-
-
-  /* ==========================================
-     FORM RENDERER
-  ========================================== */
-
-  function renderToolForm(type) {
-
-    const body =
-      $("#nexusRailToolBody");
-
-    if (!body) return;
-
-
-    /* PNR */
-
-    if (type === "pnr") {
-
-      body.innerHTML = `
-
-        <div class="rail-form-card">
-
-          <label>
-            PNR Number
-          </label>
-
-          <input
-            id="railPnr"
-            type="text"
-            inputmode="numeric"
-            maxlength="10"
-            placeholder="Enter 10 digit PNR"
-          >
-
-          <button
-            class="rail-primary-btn"
-            id="railPnrCheck"
-          >
-            Check PNR
-          </button>
-
-        </div>
-
-
-        <div
-          id="railResult"
-          class="rail-result"
-        >
-          Enter your PNR to continue.
-        </div>
-
-      `;
-
-
-      const input =
-        $("#railPnr");
-
-      const button =
-        $("#railPnrCheck");
-
-
-      if (input) {
-
-        input.addEventListener(
-          "input",
-          event => {
-
-            event.target.value =
-              event.target.value
-                .replace(/\D/g, "")
-                .slice(0, 10);
-
-          }
-        );
-
-      }
-
-
-      if (button) {
-
-        button.addEventListener(
-          "click",
-          () => {
-
-            const pnr =
-              input.value.trim();
-
-
-            if (
-              !/^\d{10}$/.test(pnr)
-            ) {
-
-              setResult(`
-
-                <strong>
-                  Invalid PNR
-                </strong>
-
-                <span>
-                  Please enter exactly 10 digits.
-                </span>
-
-              `);
-
-              return;
-
-            }
-
-
-            setResult(`
-
-              <strong>
-                PNR Accepted
-              </strong>
-
-              <span>
-                PNR ${pnr} is ready.
-              </span>
-
-              <small>
-                Live railway data will be connected
-                through the NEXUS railway API layer.
-              </small>
-
-            `);
-
-          }
-        );
-
-      }
-
-      return;
-    }
-
-
-    /* TRAIN SEARCH */
-
-    if (type === "train") {
-
-      body.innerHTML = `
-
-        <div class="rail-form-card">
-
-          <label>
-            From Station
-          </label>
-
-          <input
-            id="railFrom"
-            placeholder="e.g. Ara"
-          >
-
-
-          <label>
-            To Station
-          </label>
-
-          <input
-            id="railTo"
-            placeholder="e.g. New Delhi"
-          >
-
-
-          <label>
-            Journey Date
-          </label>
-
-          <input
-            id="railDate"
-            type="date"
-          >
-
-
-          <button
-            class="rail-primary-btn"
-            id="railTrainSearch"
-          >
-            Search Trains
-          </button>
-
-        </div>
-
-
-        <div
-          id="railResult"
-          class="rail-result"
-        >
-          Enter your journey details.
-        </div>
-
-      `;
-
-
-      $("#railTrainSearch")
-        ?.addEventListener(
-          "click",
-          () => {
-
-            const from =
-              $("#railFrom")?.value.trim();
-
-            const to =
-              $("#railTo")?.value.trim();
-
-            const date =
-              $("#railDate")?.value;
-
-
-            if (!from || !to || !date) {
-
-              setResult(`
-
-                <strong>
-                  Complete all fields
-                </strong>
-
-                <span>
-                  Enter From, To and Journey Date.
-                </span>
-
-              `);
-
-              return;
-
-            }
-
-
-            setResult(`
-
-              <strong>
-                Train Search Ready
-              </strong>
-
-              <span>
-                ${from} → ${to}
-              </span>
-
-              <small>
-                Journey date: ${date}
-              </small>
-
-              <small>
-                Live train results will appear here
-                after railway API integration.
-              </small>
-
-            `);
-
-          }
-        );
-
-      return;
-    }
-
-
-    /* LIVE STATUS */
-
-    if (type === "live") {
-
-      body.innerHTML = `
-
-        <div class="rail-form-card">
-
-          <label>
-            Train Number
-          </label>
-
-          <input
-            id="railTrainNumber"
-            type="text"
-            inputmode="numeric"
-            maxlength="6"
-            placeholder="Enter train number"
-          >
-
-
-          <button
-            class="rail-primary-btn"
-            id="railLiveCheck"
-          >
-            Check Live Status
-          </button>
-
-        </div>
-
-
-        <div
-          id="railResult"
-          class="rail-result"
-        >
-          Enter a train number.
-        </div>
-
-      `;
-
-
-      $("#railLiveCheck")
-        ?.addEventListener(
-          "click",
-          () => {
-
-            const number =
-              $("#railTrainNumber")
-                ?.value.trim();
-
-
-            if (!number) {
-
-              setResult(`
-                <strong>
-                  Enter Train Number
-                </strong>
-              `);
-
-              return;
-
-            }
-
-
-            setResult(`
-
-              <strong>
-                Live Status
-              </strong>
-
-              <span>
-                Train ${number}
-              </span>
-
-              <small>
-                Live location and delay data will appear
-                here after API integration.
-              </small>
-
-            `);
-
-          }
-        );
-
-      return;
-    }
-
-
-    /* ROUTE */
-
-    if (type === "route") {
-
-      body.innerHTML = `
-
-        <div class="rail-form-card">
-
-          <label>
-            Train Number / Name
-          </label>
-
-          <input
-            id="railRouteTrain"
-            placeholder="Enter train number or name"
-          >
-
-
-          <button
-            class="rail-primary-btn"
-            id="railRouteCheck"
-          >
-            Show Route
-          </button>
-
-        </div>
-
-
-        <div
-          id="railResult"
-          class="rail-result"
-        >
-          Enter a train number or train name.
-        </div>
-
-      `;
-
-
-      $("#railRouteCheck")
-        ?.addEventListener(
-          "click",
-          () => {
-
-            const train =
-              $("#railRouteTrain")
-                ?.value.trim();
-
-
-            if (!train) {
-
-              setResult(`
-                <strong>
-                  Enter Train Number or Name
-                </strong>
-              `);
-
-              return;
-
-            }
-
-
-            setResult(`
-
-              <strong>
-                Train Route
-              </strong>
-
-              <span>
-                ${train}
-              </span>
-
-              <small>
-                Complete station-by-station route
-                will appear here after API integration.
-              </small>
-
-            `);
-
-          }
-        );
-
-      return;
-    }
-
-
-    /* SEAT AVAILABILITY */
-
-    if (type === "seat") {
-
-      body.innerHTML = `
-
-        <div class="rail-form-card">
-
-          <label>
-            From Station
-          </label>
-
-          <input
-            id="railSeatFrom"
-            placeholder="From"
-          >
-
-
-          <label>
-            To Station
-          </label>
-
-          <input
-            id="railSeatTo"
-            placeholder="To"
-          >
-
-
-          <label>
-            Journey Date
-          </label>
-
-          <input
-            id="railSeatDate"
-            type="date"
-          >
-
-
-          <label>
-            Class
-          </label>
-
-          <select
-            id="railClass"
-          >
-
-            <option value="">
-              Select Class
-            </option>
-
-            <option>
-              SL
-            </option>
-
-            <option>
-              3A
-            </option>
-
-            <option>
-              2A
-            </option>
-
-            <option>
-              1A
-            </option>
-
-            <option>
-              CC
-            </option>
-
-            <option>
-              EC
-            </option>
-
-          </select>
-
-
-          <button
-            class="rail-primary-btn"
-            id="railSeatCheck"
-          >
-            Check Availability
-          </button>
-
-        </div>
-
-
-        <div
-          id="railResult"
-          class="rail-result"
-        >
-          Enter journey details.
-        </div>
-
-      `;
-
-
-      $("#railSeatCheck")
-        ?.addEventListener(
-          "click",
-          () => {
-
-            const from =
-              $("#railSeatFrom")
-                ?.value.trim();
-
-            const to =
-              $("#railSeatTo")
-                ?.value.trim();
-
-            const date =
-              $("#railSeatDate")
-                ?.value;
-
-            const cls =
-              $("#railClass")
-                ?.value;
-
-
-            if (
-              !from ||
-              !to ||
-              !date ||
-              !cls
-            ) {
-
-              setResult(`
-
-                <strong>
-                  Complete all fields
-                </strong>
-
-                <span>
-                  Enter journey details and class.
-                </span>
-
-              `);
-
-              return;
-
-            }
-
-
-            setResult(`
-
-              <strong>
-                Seat Availability
-              </strong>
-
-              <span>
-                ${from} → ${to}
-              </span>
-
-              <small>
-                Date: ${date}
-              </small>
-
-              <small>
-                Class: ${cls}
-              </small>
-
-              <small>
-                Live availability will appear here
-                after API integration.
-              </small>
-
-            `);
-
-          }
-        );
-
-      return;
-    }
-
-
-    /* BETWEEN STATIONS */
-
-    if (type === "between") {
-
-      body.innerHTML = `
-
-        <div class="rail-form-card">
-
-          <label>
-            From Station
-          </label>
-
-          <input
-            id="railBetweenFrom"
-            placeholder="From station"
-          >
-
-
-          <label>
-            To Station
-          </label>
-
-          <input
-            id="railBetweenTo"
-            placeholder="To station"
-          >
-
-
-          <button
-            class="rail-primary-btn"
-            id="railBetweenCheck"
-          >
-            Find Trains
-          </button>
-
-        </div>
-
-
-        <div
-          id="railResult"
-          class="rail-result"
-        >
-          Enter both stations.
-        </div>
-
-      `;
-
-
-      $("#railBetweenCheck")
-        ?.addEventListener(
-          "click",
-          () => {
-
-            const from =
-              $("#railBetweenFrom")
-                ?.value.trim();
-
-            const to =
-              $("#railBetweenTo")
-                ?.value.trim();
-
-
-            if (!from || !to) {
-
-              setResult(`
-
-                <strong>
-                  Enter both stations
-                </strong>
-
-              `);
-
-              return;
-
-            }
-
-
-            setResult(`
-
-              <strong>
-                Trains Between Stations
-              </strong>
-
-              <span>
-                ${from} → ${to}
-              </span>
-
-              <small>
-                Matching trains will appear here
-                after API integration.
-              </small>
-
-            `);
-
-          }
-        );
-
-      return;
-    }
-
-
-    /* ARRIVAL / DEPARTURE */
-
-    if (type === "arrival") {
-
-      body.innerHTML = `
-
-        <div class="rail-form-card">
-
-          <label>
-            Railway Station
-          </label>
-
-          <input
-            id="railStation"
-            placeholder="Enter station name"
-          >
-
-
-          <button
-            class="rail-primary-btn"
-            id="railArrivalCheck"
-          >
-            Check Timings
-          </button>
-
-        </div>
-
-
-        <div
-          id="railResult"
-          class="rail-result"
-        >
-          Enter a railway station.
-        </div>
-
-      `;
-
-
-      $("#railArrivalCheck")
-        ?.addEventListener(
-          "click",
-          () => {
-
-            const station =
-              $("#railStation")
-                ?.value.trim();
-
-
-            if (!station) {
-
-              setResult(`
-
-                <strong>
-                  Enter Station
-                </strong>
-
-              `);
-
-              return;
-
-            }
-
-
-            setResult(`
-
-              <strong>
-                Station Timings
-              </strong>
-
-              <span>
-                ${station}
-              </span>
-
-              <small>
-                Live arrival and departure data
-                will appear here after API integration.
-              </small>
-
-            `);
-
-          }
-        );
-
-      return;
-    }
-
-
-    /* DELAY ALERTS */
-
-    if (type === "delay") {
-
-      body.innerHTML = `
-
-        <div class="rail-form-card">
-
-          <label>
-            Train Number
-          </label>
-
-          <input
-            id="railDelayTrain"
-            type="text"
-            inputmode="numeric"
-            placeholder="Enter train number"
-          >
-
-
-          <button
-            class="rail-primary-btn"
-            id="railDelayCheck"
-          >
-            Check Delay
-          </button>
-
-        </div>
-
-
-        <div
-          id="railResult"
-          class="rail-result"
-        >
-          Enter a train number.
-        </div>
-
-      `;
-
-
-      $("#railDelayCheck")
-        ?.addEventListener(
-          "click",
-          () => {
-
-            const number =
-              $("#railDelayTrain")
-                ?.value.trim();
-
-
-            if (!number) {
-
-              setResult(`
-
-                <strong>
-                  Enter Train Number
-                </strong>
-
-              `);
-
-              return;
-
-            }
-
-
-            setResult(`
-
-              <strong>
-                Delay Status
-              </strong>
-
-              <span>
-                Train ${number}
-              </span>
-
-              <small>
-                Live delay information will appear
-                here after API integration.
-              </small>
-
-            `);
-
-          }
-        );
-
-    }
-
-  }
-
-
-  /* ==========================================
-     RAIL BUTTON INTERCEPTOR
-  ========================================== */
-
-  document.addEventListener(
-    "click",
-    event => {
-
-      const button =
-        event.target.closest(
-          "#railPanel .tool.cyan[data-tool]"
-        );
-
-
-      if (!button) return;
-
-
-      const tool =
-        button.dataset.tool;
-
-
-      if (!TOOLS[tool]) return;
-
-
+    button.addEventListener("click", async event => {
       event.preventDefault();
 
-      event.stopImmediatePropagation();
+      const pnr = input.value.trim();
 
+      if (!validPNR(pnr)) {
+        showResult(
+          panel,
+          "Invalid PNR",
+          "Please enter a valid 10-digit PNR number.",
+          "error"
+        );
+        return;
+      }
 
-      openRailTool(tool);
+      setLoading(button, true, "Checking...");
 
-    },
-    true
-  );
+      saveHistory("PNR Status", { pnr });
 
+      await wait(700);
 
-  /* ==========================================
-     STYLES
-  ========================================== */
-
-  function injectStyles() {
-
-    if (
-      $("#nexusRailV3Styles")
-    ) return;
-
-
-    const style =
-      document.createElement(
-        "style"
+      showResult(
+        panel,
+        "PNR Accepted",
+        `PNR ${pnr} is ready for live railway API lookup.`,
+        "success"
       );
 
-
-    style.id =
-      "nexusRailV3Styles";
-
-
-    style.textContent = `
-
-      #nexusRailToolScreen {
-
-        margin-top: 14px;
-
-        padding: 15px;
-
-        border:
-          1px solid
-          rgba(255,255,255,.08);
-
-        border-radius: 17px;
-
-        background:
-          linear-gradient(
-            145deg,
-            rgba(0,210,240,.045),
-            rgba(120,80,255,.035)
-          );
-
-      }
-
-
-      .nexus-rail-tool-head {
-
-        display: flex;
-
-        align-items: flex-start;
-
-        gap: 12px;
-
-        margin-bottom: 14px;
-
-      }
-
-
-      .nexus-rail-back {
-
-        width: 38px;
-
-        height: 38px;
-
-        flex-shrink: 0
-        border:
-          1px solid
-          rgba(255,255,255,.08);
-
-        border-radius: 11px;
-
-        background:
-          rgba(255,255,255,.035);
-
-        color: #fff;
-
-        font-size: 20px;
-
-      }
-
-
-      .nexus-rail-tool-head h3 {
-
-        margin:
-          5px 0 3px;
-
-        color:
-          #eaf8ff;
-
-        font-size:
-          17px;
-
-      }
-
-
-      .nexus-rail-tool-head p {
-
-        margin: 0;
-
-        color:
-          #718198;
-
-        font-size:
-          9px;
-
-      }
-
-
-      .rail-form-card {
-
-        display:
-          flex;
-
-        flex-direction:
-          column;
-
-        gap:
-          8px;
-
-        padding:
-          14px;
-
-        border:
-          1px solid
-          rgba(255,255,255,.07);
-
-        border-radius:
-          14px;
-
-        background:
-          rgba(0,0,0,.12);
-
-      }
-
-
-      .rail-form-card label {
-
-        margin-top:
-          3px;
-
-        color:
-          #8ca0b7;
-
-        font-size:
-          9px;
-
-      }
-
-
-      .rail-form-card input,
-
-      .rail-form-card select {
-
-        width:
-          100%;
-
-        height:
-          43px;
-
-        box-sizing:
-          border-box;
-
-        padding:
-          0 11px;
-
-        border:
-          1px solid
-          rgba(255,255,255,.08);
-
-        border-radius:
-          10px;
-
-        outline:
-          none;
-
-        background:
-          #071120;
-
-        color:
-          #fff;
-
-        font-size:
-          10px;
-
-      }
-
-
-      .rail-form-card input:focus,
-
-      .rail-form-card select:focus {
-
-        border-color:
-          rgba(0,210,240,.5);
-
-      }
-
-
-      .rail-primary-btn {
-
-        width:
-          100%;
-
-        min-height:
-          43px;
-
-        margin-top:
-          5px;
-
-        border:
-          0;
-
-        border-radius:
-          11px;
-
-        background:
-          linear-gradient(
-            135deg,
-            #08bddd,
-            #477cff
-          );
-
-        color:
-          #fff;
-
-        font-size:
-          10px;
-
-        font-weight:
-          800;
-
-      }
-
-
-      .rail-result {
-
-        display:
-          flex;
-
-        flex-direction:
-          column;
-
-        gap:
-          6px;
-
-        margin-top:
-          10px;
-
-        padding:
-          14px;
-
-        border:
-          1px solid
-          rgba(255,255,255,.06);
-
-        border-radius:
-          13px;
-
-        background:
-          rgba(255,255,255,.025);
-
-        color:
-          #9eb0c4;
-
-        font-size:
-          9px;
-
-        line-height:
-          1.5;
-
-      }
-
-
-      .rail-result strong {
-
-        color:
-          #eaf8ff;
-
-        font-size:
-          11px;
-
-      }
-
-
-      .rail-result span {
-
-        color:
-          #a9bbcf;
-
-      }
-
-
-      .rail-result small {
-
-        color:
-          #65788f;
-
-        font-size:
-          8px;
-
-      }
-
-
-      @media (max-width: 520px) {
-
-        #nexusRailToolScreen {
-
-          padding:
-            13px;
-
-        }
-
-      }
-
-    `;
-
-
-    document.head.appendChild(
-      style
-    );
-
+      setLoading(button, false);
+    });
   }
 
+  /* =========================================================
+     TRAIN SEARCH
+     ========================================================= */
 
-  /* ==========================================
+  function setupTrainSearch(panel) {
+    if (!panel) return;
+
+    const inputs = $$("input", panel);
+
+    if (inputs.length < 2) return;
+
+    const from = inputs[0];
+    const to = inputs[1];
+
+    const button = $$("button", panel).find(
+      btn => /search trains/i.test(btn.textContent)
+    );
+
+    if (!button || button.dataset.railBound) return;
+
+    button.dataset.railBound = "1";
+
+    button.addEventListener("click", async event => {
+      event.preventDefault();
+
+      const fromValue = from.value.trim();
+      const toValue = to.value.trim();
+
+      if (!validStation(fromValue)) {
+        showResult(
+          panel,
+          "From station required",
+          "Please enter a valid departure station.",
+          "error"
+        );
+        from.focus();
+        return;
+      }
+
+      if (!validStation(toValue)) {
+        showResult(
+          panel,
+          "To station required",
+          "Please enter a valid destination station.",
+          "error"
+        );
+        to.focus();
+        return;
+      }
+
+      if (
+        fromValue.toLowerCase() ===
+        toValue.toLowerCase()
+      ) {
+        showResult(
+          panel,
+          "Invalid journey",
+          "From and To stations cannot be the same.",
+          "error"
+        );
+        return;
+      }
+
+      setLoading(button, true, "Searching...");
+
+      saveHistory("Train Search", {
+        from: fromValue,
+        to: toValue
+      });
+
+      await wait(700);
+
+      showResult(
+        panel,
+        "Journey Ready",
+        `${fromValue} → ${toValue} is ready for live train search.`,
+        "success"
+      );
+
+      setLoading(button, false);
+    });
+  }
+
+  /* =========================================================
+     LIVE TRAIN STATUS
+     ========================================================= */
+
+  function setupLiveStatus(panel) {
+    if (!panel) return;
+
+    const input = $("input", panel);
+
+    const button = $$("button", panel).find(
+      btn => /live status/i.test(btn.textContent)
+    );
+
+    if (!input || !button || button.dataset.railBound) {
+      return;
+    }
+
+    button.dataset.railBound = "1";
+
+    input.inputMode = "numeric";
+
+    input.addEventListener("input", () => {
+      input.value = input.value
+        .replace(/\D/g, "")
+        .slice(0, 6);
+    });
+
+    button.addEventListener("click", async event => {
+      event.preventDefault();
+
+      const train = input.value.trim();
+
+      if (!validTrainNumber(train)) {
+        showResult(
+          panel,
+          "Invalid train number",
+          "Enter a valid 4 to 6 digit train number.",
+          "error"
+        );
+        return;
+      }
+
+      setLoading(button, true, "Checking...");
+
+      saveHistory("Live Train Status", {
+        train
+      });
+
+      await wait(700);
+
+      showResult(
+        panel,
+        "Train Accepted",
+        `Train ${train} is ready for live running-status lookup.`,
+        "success"
+      );
+
+      setLoading(button, false);
+    });
+  }
+
+  /* =========================================================
+     TRAIN ROUTE
+     ========================================================= */
+
+  function setupTrainRoute(panel) {
+    if (!panel) return;
+
+    const input = $("input", panel);
+
+    const button = $$("button", panel).find(
+      btn => /show route/i.test(btn.textContent)
+    );
+
+    if (!input || !button || button.dataset.railBound) {
+      return;
+    }
+
+    button.dataset.railBound = "1";
+
+    button.addEventListener("click", async event => {
+      event.preventDefault();
+
+      const value = input.value.trim();
+
+      if (!value) {
+        showResult(
+          panel,
+          "Train required",
+          "Enter a train number or train name.",
+          "error"
+        );
+        return;
+      }
+
+      setLoading(button, true, "Loading...");
+
+      saveHistory("Train Route", {
+        train: value
+      });
+
+      await wait(700);
+
+      showResult(
+        panel,
+        "Route Request Ready",
+        `${value} is ready for live route lookup.`,
+        "success"
+      );
+
+      setLoading(button, false);
+    });
+  }
+
+  /* =========================================================
+     SEAT AVAILABILITY
+     ========================================================= */
+
+  function setupSeatAvailability(panel) {
+    if (!panel) return;
+
+    const inputs = $$("input", panel);
+
+    const button = $$("button", panel).find(
+      btn => /check availability/i.test(btn.textContent)
+    );
+
+    if (
+      inputs.length < 2 ||
+      !button ||
+      button.dataset.railBound
+    ) {
+      return;
+    }
+
+    button.dataset.railBound = "1";
+
+    button.addEventListener("click", async event => {
+      event.preventDefault();
+
+      const from = inputs[0].value.trim();
+      const to = inputs[1].value.trim();
+
+      if (!validStation(from) || !validStation(to)) {
+        showResult(
+          panel,
+          "Journey details required",
+          "Enter both From and To stations.",
+          "error"
+        );
+        return;
+      }
+
+      setLoading(button, true, "Checking...");
+
+      saveHistory("Seat Availability", {
+        from,
+        to
+      });
+
+      await wait(700);
+
+      showResult(
+        panel,
+        "Availability Request Ready",
+        `${from} → ${to} is ready for live seat availability lookup.`,
+        "success"
+      );
+
+      setLoading(button, false);
+    });
+  }
+
+  /* =========================================================
+     BETWEEN STATIONS
+     ========================================================= */
+
+  function setupBetweenStations(panel) {
+    if (!panel) return;
+
+    const inputs = $$("input", panel);
+
+    const button = $$("button", panel).find(
+      btn => /find trains/i.test(btn.textContent)
+    );
+
+    if (
+      inputs.length < 2 ||
+      !button ||
+      button.dataset.railBound
+    ) {
+      return;
+    }
+
+    button.dataset.railBound = "1";
+
+    button.addEventListener("click", async event => {
+      event.preventDefault();
+
+      const from = inputs[0].value.trim();
+      const to = inputs[1].value.trim();
+
+      if (!validStation(from) || !validStation(to)) {
+        showResult(
+          panel,
+          "Both stations required",
+          "Please enter From and To stations.",
+          "error"
+        );
+        return;
+      }
+
+      setLoading(button, true, "Finding...");
+
+      saveHistory("Between Stations", {
+        from,
+        to
+      });
+
+      await wait(700);
+
+      showResult(
+        panel,
+        "Search Ready",
+        `Train search between ${from} and ${to} is ready for live data.`,
+        "success"
+      );
+
+      setLoading(button, false);
+    });
+  }
+
+  /* =========================================================
+     ARRIVAL / DEPARTURE
+     ========================================================= */
+
+  function setupArrivalDeparture(panel) {
+    if (!panel) return;
+
+    const input = $("input", panel);
+
+    const button = $$("button", panel).find(
+      btn => /check timings/i.test(btn.textContent)
+    );
+
+    if (!input || !button || button.dataset.railBound) {
+      return;
+    }
+
+    button.dataset.railBound = "1";
+
+    button.addEventListener("click", async event => {
+      event.preventDefault();
+
+      const station = input.value.trim();
+
+      if (!validStation(station)) {
+        showResult(
+          panel,
+          "Station required",
+          "Enter a railway station name.",
+          "error"
+        );
+        return;
+      }
+
+      setLoading(button, true, "Checking...");
+
+      saveHistory("Arrival / Departure", {
+        station
+      });
+
+      await wait(700);
+
+      showResult(
+        panel,
+        "Station Accepted",
+        `${station} is ready for live arrival/departure lookup.`,
+        "success"
+      );
+
+      setLoading(button, false);
+    });
+  }
+
+  /* =========================================================
+     DELAY ALERTS
+     ========================================================= */
+
+  function setupDelayAlerts(panel) {
+    if (!panel) return;
+
+    const input = $("input", panel);
+
+    const button = $$("button", panel).find(
+      btn => /check delay/i.test(btn.textContent)
+    );
+
+    if (!input || !button || button.dataset.railBound) {
+      return;
+    }
+
+    button.dataset.railBound = "1";
+
+    input.inputMode = "numeric";
+
+    input.addEventListener("input", () => {
+      input.value = input.value
+        .replace(/\D/g, "")
+        .slice(0, 6);
+    });
+
+    button.addEventListener("click", async event => {
+      event.preventDefault();
+
+      const train = input.value.trim();
+
+      if (!validTrainNumber(train)) {
+        showResult(
+          panel,
+          "Invalid train number",
+          "Enter a valid 4 to 6 digit train number.",
+          "error"
+        );
+        return;
+      }
+
+      setLoading(button, true, "Checking...");
+
+      saveHistory("Delay Alerts", {
+        train
+      });
+
+      await wait(700);
+
+      showResult(
+        panel,
+        "Delay Monitor Ready",
+        `Train ${train} is ready for live delay information.`,
+        "success"
+      );
+
+      setLoading(button, false);
+    });
+  }
+
+  /* =========================================================
+     MODE DETECTION
+     ========================================================= */
+
+  function detectPanelMode(panel) {
+    if (!panel) return;
+
+    const heading =
+      $("h1", panel) ||
+      $("h2", panel) ||
+      $("h3", panel);
+
+    if (!heading) return;
+
+    const title =
+      heading.textContent
+        .trim()
+        .toLowerCase();
+
+    if (title.includes("pnr")) {
+      setupPNR(panel);
+    }
+
+    if (title.includes("train search")) {
+      setupTrainSearch(panel);
+    }
+
+    if (title.includes("live train status")) {
+      setupLiveStatus(panel);
+    }
+
+    if (title.includes("train route")) {
+      setupTrainRoute(panel);
+    }
+
+    if (title.includes("seat availability")) {
+      setupSeatAvailability(panel);
+    }
+
+    if (title.includes("between stations")) {
+      setupBetweenStations(panel);
+    }
+
+    if (title.includes("arrival / departure")) {
+      setupArrivalDeparture(panel);
+    }
+
+    if (title.includes("delay alerts")) {
+      setupDelayAlerts(panel);
+    }
+  }
+
+  /* =========================================================
      INITIALIZE
-  ========================================== */
+     ========================================================= */
 
-  function init() {
+  function initRailMode() {
+    const panels = $$(".panel");
 
-    injectStyles();
+    panels.forEach(panel => {
+      detectPanelMode(panel);
+    });
 
     console.log(
-      "NEXUS Rail Mode V3 loaded."
+      "%cNEXUS Rail Mode V2 loaded",
+      "color:#20d9ff;font-weight:bold"
     );
-
   }
 
+  function wait(ms) {
+    return new Promise(resolve =>
+      setTimeout(resolve, ms)
+    );
+  }
 
-  if (
-    document.readyState ===
-    "loading"
-  ) {
+  /* =========================================================
+     START
+     ========================================================= */
 
+  if (document.readyState === "loading") {
     document.addEventListener(
       "DOMContentLoaded",
-      init
+      initRailMode
     );
-
   } else {
-
-    init();
-
+    initRailMode();
   }
 
 })();
